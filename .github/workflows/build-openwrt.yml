@@ -19,11 +19,11 @@ on:
         required: false
         default: 'false'
         type: boolean
-  schedule:
-    - cron: 0 8 * * 2
+  #schedule:
+  #  - cron: 0 8 * * 2
 
 env:
-  REPO_URL: https://github.com/kkstone/immortalwrt-ipq50xx
+  REPO_URL: https://github.com/baili233/immortalwrt-ipq50xx
   REPO_BRANCH: openwrt-21.02
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
@@ -229,7 +229,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "release_tag=RAX3000Q-$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
+        echo "release_tag=CR881x-$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         touch release.txt
         echo "status=success" >> $GITHUB_OUTPUT
 
