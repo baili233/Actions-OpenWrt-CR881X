@@ -159,34 +159,9 @@ jobs:
     - name: Load custom configuration
       run: |
         [ -e files ] && mv files openwrt/files
-        #[ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         chmod +x $DIY_P2_SH
         cd openwrt
-        cat <<EOF | sed -E 's/^  //' >.config
-          CONFIG_TARGET_ipq50xx=y
-          CONFIG_TARGET_ipq50xx_arm=y
-          CONFIG_TARGET_MULTI_PROFILE=y
-          CONFIG_TARGET_ALL_PROFILES=y
-          CONFIG_TARGET_PER_DEVICE_ROOTFS=y
-          CONFIG_ATH11K_MEM_PROFILE_512M=y
-          CONFIG_IB=y
-
-          CONFIG_ALL_NONSHARED=y
-          #CONFIG_REPRODUCIBLE_DEBUG_INFO=y
-          CONFIG_PACKAGE_luci=y
-          CONFIG_PACKAGE_kmod-nf-nathelper=y
-          CONFIG_PACKAGE_kmod-nf-nathelper-extra=y
-          CONFIG_PACKAGE_luci-app-turboacc=y
-          CONFIG_PACKAGE_TURBOACC_INCLUDE_NO_FASTPATH=y
-          CONFIG_PACKAGE_TURBOACC_INCLUDE_BBR_CCA=y
-          CONFIG_PACKAGE_luci-app-turboacc=y
-          CONFIG_PACKAGE_luci-i18n-turboacc-zh-cn=y
-          CONFIG_PACKAGE_luci-theme-argon=y
-          CONFIG_PACKAGE_luci-app-argon-config=y
-          CONFIG_PACKAGE_luci-i18n-argon-config-zh-cn=y
-          CONFIG_PACKAGE_wpad-openssl=y
-
-        EOF
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
     - name: SSH connection to Actions
@@ -254,7 +229,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "release_tag=CR881x-$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
+        echo "release_tag=IPQ50XX-$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         touch release.txt
         echo "status=success" >> $GITHUB_OUTPUT
 
