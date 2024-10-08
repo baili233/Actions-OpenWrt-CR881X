@@ -90,7 +90,7 @@ jobs:
     - name: Enable build ccache
       uses: klever1988/cachewrtbuild@main
       with:
-        ccache: 'true'
+        ccache: 'false'
         mixkey: 'immortalwrt21-cortexa7-vfpv4'
         prefix: ${{ github.workspace }}/openwrt
 
