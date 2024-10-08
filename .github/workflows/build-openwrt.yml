@@ -156,6 +156,8 @@ jobs:
         unzip luci-app-turboacc.zip -d feeds/luci/applications/
         rm -rf luci-app-turboacc.zip
 
+        git clone https://github.com/ntlf9t/luci-app-easymesh.git feeds/luci/applications/luci-app-easymesh
+        
     - name: Load custom configuration
       run: |
         [ -e files ] && mv files openwrt/files
