@@ -86,6 +86,8 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH wlan-ap
         ln -sf /workdir/wlan-ap/openwrt $GITHUB_WORKSPACE/openwrt
+        cd wlan-ap
+        ./setup.py --setup
 
     - name: Load custom feeds
       run: |
