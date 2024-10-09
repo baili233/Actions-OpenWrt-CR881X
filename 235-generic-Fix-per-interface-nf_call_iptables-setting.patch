@@ -1,0 +1,158 @@
+From a1ccd15cad3fbbfdef771b8c4799b1f8ccb2d7f9 Mon Sep 17 00:00:00 2001
+From: baili233 <2389730775@qq.com>
+Date: Wed, 9 Oct 2024 21:08:26 +0800
+Subject: [PATCH] 235-generic-Fix-per-interface-nf_call_iptables-setting.patch
+
+---
+ net/bridge/br_forward.c         |  4 ++--
+ net/bridge/br_input.c           |  6 +++---
+ net/bridge/br_multicast.c       |  2 +-
+ net/bridge/br_netfilter_hooks.c |  8 --------
+ net/bridge/br_private.h         | 11 -----------
+ net/bridge/br_stp_bpdu.c        |  2 +-
+ net/netfilter/nf_nat_core.c     |  2 +-
+ 7 files changed, 8 insertions(+), 27 deletions(-)
+
+diff --git a/net/bridge/br_forward.c b/net/bridge/br_forward.c
+index fa5d87e83..d393e1391 100644
+--- a/net/bridge/br_forward.c
++++ b/net/bridge/br_forward.c
+@@ -63,7 +63,7 @@ EXPORT_SYMBOL_GPL(br_dev_queue_push_xmit);
+ int br_forward_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
+ {
+ 	skb->tstamp = 0;
+-	return BR_HOOK(NFPROTO_BRIDGE, NF_BR_POST_ROUTING,
++	return NF_HOOK(NFPROTO_BRIDGE, NF_BR_POST_ROUTING,
+ 		       net, sk, skb, NULL, skb->dev,
+ 		       br_dev_queue_push_xmit);
+ 
+@@ -107,7 +107,7 @@ static void __br_forward(const struct net_bridge_port *to,
+ 		indev = NULL;
+ 	}
+ 
+-	BR_HOOK(NFPROTO_BRIDGE, br_hook,
++	NF_HOOK(NFPROTO_BRIDGE, br_hook,
+ 		net, NULL, skb, indev, skb->dev,
+ 		br_forward_finish);
+ }
+diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+index 6d3ce7699..72a71337f 100644
+--- a/net/bridge/br_input.c
++++ b/net/bridge/br_input.c
+@@ -69,7 +69,7 @@ int br_pass_frame_up(struct sk_buff *skb)
+ 	br_multicast_count(br, NULL, skb, br_multicast_igmp_type(skb),
+ 			   BR_MCAST_DIR_TX);
+ 
+-	return BR_HOOK(NFPROTO_BRIDGE, NF_BR_LOCAL_IN,
++	return NF_HOOK(NFPROTO_BRIDGE, NF_BR_LOCAL_IN,
+ 		       dev_net(indev), NULL, skb, indev, NULL,
+ 		       br_netif_receive_skb);
+ }
+@@ -364,7 +364,7 @@ rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
+ 		 *   - returns = 0 (stolen/nf_queue)
+ 		 * Thus return 1 from the okfn() to signal the skb is ok to pass
+ 		 */
+-		if (BR_HOOK(NFPROTO_BRIDGE, NF_BR_LOCAL_IN,
++		if (NF_HOOK(NFPROTO_BRIDGE, NF_BR_LOCAL_IN,
+ 			    dev_net(skb->dev), NULL, skb, skb->dev, NULL,
+ 			    br_handle_local_finish) == 1) {
+ 			return RX_HANDLER_PASS;
+@@ -380,7 +380,7 @@ rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
+ 			if (ether_addr_equal(p->br->dev->dev_addr, dest))
+ 				skb->pkt_type = PACKET_HOST;
+ 
+-			if (BR_HOOK(NFPROTO_BRIDGE, NF_BR_PRE_ROUTING,
++			if (NF_HOOK(NFPROTO_BRIDGE, NF_BR_PRE_ROUTING,
+ 				dev_net(skb->dev), NULL, skb, skb->dev, NULL,
+ 				br_handle_local_finish) == 1) {
+ 				return RX_HANDLER_PASS;
+diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+index 9136ea80d..6276030f5 100644
+--- a/net/bridge/br_multicast.c
++++ b/net/bridge/br_multicast.c
+@@ -724,7 +724,7 @@ static void __br_multicast_send_query(struct net_bridge *br,
+ 		skb->dev = port->dev;
+ 		br_multicast_count(br, port, skb, igmp_type,
+ 				   BR_MCAST_DIR_TX);
+-		BR_HOOK(NFPROTO_BRIDGE, NF_BR_LOCAL_OUT,
++		NF_HOOK(NFPROTO_BRIDGE, NF_BR_LOCAL_OUT,
+ 			dev_net(port->dev), NULL, skb, NULL, skb->dev,
+ 			br_dev_queue_push_xmit);
+ 	} else {
+diff --git a/net/bridge/br_netfilter_hooks.c b/net/bridge/br_netfilter_hooks.c
+index fb360dab3..bfa680074 100644
+--- a/net/bridge/br_netfilter_hooks.c
++++ b/net/bridge/br_netfilter_hooks.c
+@@ -74,14 +74,6 @@ struct brnf_net {
+ #define IS_ARP(skb) \
+ 	(!skb_vlan_tag_present(skb) && skb->protocol == htons(ETH_P_ARP))
+ 
+-bool br_netfilter_run_hooks(struct net *net)
+-{
+-	struct brnf_net *brnf = net_generic(net, brnf_net_id);
+-
+-	return brnf->call_iptables | brnf->call_ip6tables | brnf->call_arptables |
+-		brnf->call_ebtables | brnf->call_custom;
+-}
+-
+ static inline __be16 vlan_proto(const struct sk_buff *skb)
+ {
+ 	if (skb_vlan_tag_present(skb))
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 5bfc46b5d..5895c5cb7 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -1120,24 +1120,13 @@ extern const struct nf_br_ops __rcu *nf_br_ops;
+ int br_nf_core_init(void);
+ void br_nf_core_fini(void);
+ void br_netfilter_rtable_init(struct net_bridge *);
+-bool br_netfilter_run_hooks(struct net *net);
+ #else
+ static inline int br_nf_core_init(void) { return 0; }
+ static inline void br_nf_core_fini(void) {}
+ #define br_netfilter_rtable_init(x)
+-static inline bool br_netfilter_run_hooks(struct net *net) { return false; }
+ #endif
+ 
+ static inline int
+-BR_HOOK(uint8_t pf, unsigned int hook, struct net *net, struct sock *sk,
+-	struct sk_buff *skb, struct net_device *in, struct net_device *out,
+-	int (*okfn)(struct net *, struct sock *, struct sk_buff *))
+-{
+-	if (!br_netfilter_run_hooks(net))
+-		return okfn(net, sk, skb);
+-
+-	return NF_HOOK(pf, hook, net, sk, skb, in, out, okfn);
+-}
+ 
+ /* br_stp.c */
+ void br_set_state(struct net_bridge_port *p, unsigned int state);
+diff --git a/net/bridge/br_stp_bpdu.c b/net/bridge/br_stp_bpdu.c
+index 1777e65b0..7796dd9d4 100644
+--- a/net/bridge/br_stp_bpdu.c
++++ b/net/bridge/br_stp_bpdu.c
+@@ -56,7 +56,7 @@ static void br_send_bpdu(struct net_bridge_port *p,
+ 
+ 	skb_reset_mac_header(skb);
+ 
+-	BR_HOOK(NFPROTO_BRIDGE, NF_BR_LOCAL_OUT,
++	NF_HOOK(NFPROTO_BRIDGE, NF_BR_LOCAL_OUT,
+ 		dev_net(p->dev), NULL, skb, NULL, skb->dev,
+ 		br_send_bpdu_finish);
+ }
+diff --git a/net/netfilter/nf_nat_core.c b/net/netfilter/nf_nat_core.c
+index 4009f1f80..04ee802d7 100644
+--- a/net/netfilter/nf_nat_core.c
++++ b/net/netfilter/nf_nat_core.c
+@@ -753,7 +753,7 @@ nf_nat_inet_fn(void *priv, struct sk_buff *skb,
+ 		/* when skb is forwarding between ports of a bridge,the
+ 		 * nf_bridge will be set and nf_bridge->physoutdev is not null,
+ 		 * We can assume that it is not expecting NAT operation.
+-		 * when BR_HOOK is enabled, multicast packets will reach
++		 * when NF_HOOK is enabled, multicast packets will reach
+ 		 * postrouting twice,the first time is when it is forwarded
+ 		 * between ports of a bridge, the second time is that it is
+ 		 * forwarded to upstream port.
+-- 
+2.46.1
+
