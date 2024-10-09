@@ -104,6 +104,7 @@ jobs:
       id: package
       run: |
         cd wlan-ap/openwrt
+        ./scripts/gen_config.py gl_b3000
         make defconfig
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
