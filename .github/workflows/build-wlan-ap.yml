@@ -24,7 +24,7 @@ on:
 
 env:
   REPO_URL: https://github.com/Telecominfraproject/wlan-ap.git
-  REPO_BRANCH: main
+  REPO_BRANCH: release/v2.7.0
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
@@ -94,7 +94,7 @@ jobs:
     - name: Load custom feeds
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
-        [ -e 235-generic-Fix-per-interface-nf_call_iptables-setting.patch ] && mv 235-generic-Fix-per-interface-nf_call_iptables-setting.patch /workdir/wlan-ap/feeds/ipq807x_v5.4/ipq50xx/patches/235-generic-Fix-per-interface-nf_call_iptables-setting.patch
+        #[ -e 235-generic-Fix-per-interface-nf_call_iptables-setting.patch ] && mv 235-generic-Fix-per-interface-nf_call_iptables-setting.patch /workdir/wlan-ap/feeds/ipq807x_v5.4/ipq50xx/patches/235-generic-Fix-per-interface-nf_call_iptables-setting.patch
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
