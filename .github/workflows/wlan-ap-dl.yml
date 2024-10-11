@@ -87,10 +87,9 @@ jobs:
         git config --global user.email "2389730775@qq.com"
         git config --global user.name "baili233"
         wget https://github.com/Telecominfraproject/wlan-ap/archive/refs/tags/v2.7.2.tar.gz
-        mkdir wlan-ap
-        tar -xzvf v2.7.2.tar.gz -C wlan-ap
-        ln -sf /workdir/wlan-ap/openwrt $GITHUB_WORKSPACE/openwrt
-        cd wlan-ap
+        tar -xzvf v2.7.2.tar.gz
+        ln -sf /workdir/wlan-ap-2.7.2/openwrt $GITHUB_WORKSPACE/openwrt
+        cd wlan-ap-2.7.2
         sed -i 's|https://source.codeaurora.org/quic/qsdk/oss/lklm/nss-clients/|https://git.codelinaro.org/clo/qsdk/oss/lklm/nss-clients|g' feeds/ipq807x/qca-nss-clients/Makefile
         ./setup.py --setup
 
