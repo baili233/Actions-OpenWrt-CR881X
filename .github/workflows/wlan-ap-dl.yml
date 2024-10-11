@@ -86,7 +86,8 @@ jobs:
         df -hT $PWD
         git config --global user.email "2389730775@qq.com"
         git config --global user.name "baili233"
-        git clone $REPO_URL -b $REPO_BRANCH wlan-ap
+        wget https://github.com/Telecominfraproject/wlan-ap/archive/refs/tags/v2.7.2.tar.gz
+        tar -xzvf v2.7.2.tar.gz -C wlan-ap
         ln -sf /workdir/wlan-ap/openwrt $GITHUB_WORKSPACE/openwrt
         cd wlan-ap
         ./setup.py --setup
