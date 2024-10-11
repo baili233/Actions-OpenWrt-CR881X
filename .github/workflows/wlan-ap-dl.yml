@@ -90,6 +90,7 @@ jobs:
         tar -xzvf v2.7.2.tar.gz -C wlan-ap
         ln -sf /workdir/wlan-ap/openwrt $GITHUB_WORKSPACE/openwrt
         cd wlan-ap
+        sed -i 's|https://source.codeaurora.org/quic/qsdk/oss/lklm/nss-clients/|https://git.codelinaro.org/clo/qsdk/oss/lklm/nss-clients|g' feeds/ipq807x/qca-nss-clients/Makefile
         ./setup.py --setup
 
     - name: Load custom feeds
