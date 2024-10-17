@@ -114,6 +114,7 @@ jobs:
           # CONFIG_PACKAGE_kmod-qca-ssdk is not set
         EOF
         make defconfig
+        sed -i 's|CONFIG_PACKAGE_kmod-qca-ssdk=y|# CONFIG_PACKAGE_kmod-qca-ssdk  is not set|g' .config
 
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
@@ -125,8 +126,7 @@ jobs:
     - name: Download package
       id: package
       run: |
-        cd openwrt
-        make defconfig
+        cd openwrt      
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
