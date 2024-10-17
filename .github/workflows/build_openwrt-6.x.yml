@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Build OpenWrt
+name: Build OpenWrt-6.x
 
 on:
   repository_dispatch:
@@ -91,15 +91,8 @@ jobs:
       uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'
-        mixkey: 'immortalwrt21-cortexa7-vfpv4'
+        mixkey: 'openwrt-6.x-cortexa7-vfpv4'
         prefix: ${{ github.workspace }}/openwrt
-
-    - name: Load custom feeds
-      run: |
-        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
-        #chmod +x $DIY_P1_SH
-        #cd openwrt
-        #$GITHUB_WORKSPACE/$DIY_P1_SH
    
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a
@@ -120,9 +113,6 @@ jobs:
           CONFIG_KERNEL_IPQ_MEM_PROFILE=512
         EOF
         make defconfig
-        #chmod +x $DIY_P2_SH
-        #cd openwrt
-        #$GITHUB_WORKSPACE/$DIY_P2_SH
 
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
@@ -130,13 +120,6 @@ jobs:
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-
-    - name: Fix some download failed first
-      run: |
-        cd openwrt
-        mkdir dl
-        wget "https://www.dropbox.com/scl/fi/9ts30p2csnlb9imaf8k68/backports-20210222-5.4-qsdk-11.5.0.5.tar.xz?rlkey=sntbyfjgg86gu2uoocgb9ggp1&st=7w81hl56&dl=1" -O dl/backports-20210222-5.4-qsdk-11.5.0.5.tar.xz
-        wget "https://www.dropbox.com/scl/fi/gu7ge6jmefn72ttuop1zs/linux-5.4-qsdk-11.5.0.5.tar.xz?rlkey=tdpq0ye35x290frbh7i8uqrm8&st=jjvegqrr&dl=1" -O dl/linux-5.4-qsdk-11.5.0.5.tar.xz
 
     - name: Download package
       id: package
