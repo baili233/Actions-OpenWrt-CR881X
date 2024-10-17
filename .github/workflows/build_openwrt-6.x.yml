@@ -105,15 +105,16 @@ jobs:
         cd openwrt
         cat <<EOF | sed -E 's/^  //' >.config
           CONFIG_TARGET_qualcommax=y
-          CONFIG_TARGET_qualcommax_ipq50xx_32Bit=y
-          CONFIG_TARGET_qualcommax_ipq50xx_32Bit_DEVICE_xiaomi_cr881x=y
+          CONFIG_TARGET_qualcommax_ipq50xx=y
+          CONFIG_TARGET_qualcommax_ipq50xx_DEVICE_xiaomi_cr881x=y
           # CONFIG_ATH11K_MEM_PROFILE_1G is not set
           CONFIG_ATH11K_MEM_PROFILE_512M=y
+          # CONFIG_IPQ_MEM_PROFILE_1024 is not set
+          CONFIG_IPQ_MEM_PROFILE_512=y
+          CONFIG_KERNEL_IPQ_MEM_PROFILE=512
           CONFIG_NSS_DRV_IPV6_ENABLE=y
           CONFIG_NSS_DRV_PPPOE_ENABLE=y
           CONFIG_NSS_DRV_VIRT_IF_ENABLE=y
-          # CONFIG_NSS_MEM_PROFILE_HIGH is not set
-          CONFIG_NSS_MEM_PROFILE_MEDIUM=y
           CONFIG_PACKAGE_ethtool=y
           CONFIG_PACKAGE_kmod-gre=y
           CONFIG_PACKAGE_kmod-iptunnel=y
@@ -125,7 +126,19 @@ jobs:
           CONFIG_PACKAGE_kmod-qca-nss-macsec=y
           CONFIG_PACKAGE_kmod-udptunnel4=y
           CONFIG_PACKAGE_kmod-udptunnel6=y
+          CONFIG_PACKAGE_liblua=y
+          CONFIG_PACKAGE_liblucihttp-lua=y
+          CONFIG_PACKAGE_libubus-lua=y
+          CONFIG_PACKAGE_lua=y
+          CONFIG_PACKAGE_luci-lib-base=y
+          CONFIG_PACKAGE_luci-lib-ip=y
+          CONFIG_PACKAGE_luci-lib-jsonc=y
+          CONFIG_PACKAGE_luci-lib-nixio=y
+          CONFIG_PACKAGE_luci-lua-runtime=y
+          CONFIG_PACKAGE_luci-theme-argon=y
           CONFIG_PACKAGE_nss-firmware-default=y
+          CONFIG_PACKAGE_nss-firmware-ipq5018=y
+          CONFIG_PACKAGE_ucode-mod-lua=y
         EOF
         make defconfig
     
