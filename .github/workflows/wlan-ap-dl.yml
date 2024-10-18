@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Build OpenWrt
+name: Build Wlan 3.2.0
 
 on:
   repository_dispatch:
@@ -24,7 +24,7 @@ on:
 
 env:
   REPO_URL: https://github.com/Telecominfraproject/wlan-ap.git
-  REPO_BRANCH: release/v2.7.0
+  REPO_BRANCH: main
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
@@ -129,7 +129,7 @@ jobs:
     - name: Generate release tag
       id: tag
       run: |
-        echo "release_tag=IPQ50XX-$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
+        echo "release_tag=waln-ap3.2.0-$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         touch release.txt
 
     - name: Upload firmware to release
