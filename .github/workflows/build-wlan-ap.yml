@@ -23,7 +23,7 @@ on:
   #  - cron: 0 8 * * 2
 
 env:
-  REPO_URL: https://github.com/Telecominfraproject/wlan-ap.git
+  REPO_URL: https://github.com/baili233/openwrt-ipq50xx.git
   REPO_BRANCH: main
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
@@ -114,7 +114,7 @@ jobs:
       id: package
       run: |
         cd openwrt
-        ./scripts/gen_config.py cig_wf186h
+        ./scripts/gen_config.py xiaomi_cr881x
         make defconfig
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
