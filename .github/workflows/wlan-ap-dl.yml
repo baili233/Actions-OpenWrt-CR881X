@@ -86,11 +86,12 @@ jobs:
         df -hT $PWD
         git config --global user.email "2389730775@qq.com"
         git config --global user.name "baili233"
-        wget https://github.com/Telecominfraproject/wlan-ap/archive/refs/tags/v2.7.2.tar.gz
-        tar -xzvf v2.7.2.tar.gz
-        ln -sf /workdir/wlan-ap-2.7.2/openwrt $GITHUB_WORKSPACE/openwrt
-        cd wlan-ap-2.7.2
-        sed -i 's|https://source.codeaurora.org/quic/qsdk/oss/lklm/nss-clients/|https://git.codelinaro.org/clo/qsdk/oss/lklm/nss-clients|g' feeds/ipq807x/qca-nss-clients/Makefile
+         git clone $REPO_URL -b $REPO_BRANCH wlan-ap
+        #wget https://github.com/Telecominfraproject/wlan-ap/archive/refs/tags/v2.7.2.tar.gz
+        #tar -xzvf v2.7.2.tar.gz
+        #ln -sf /workdir/wlan-ap-2.7.2/openwrt $GITHUB_WORKSPACE/openwrt
+        #cd wlan-ap-2.7.2
+        #sed -i 's|https://source.codeaurora.org/quic/qsdk/oss/lklm/nss-clients/|https://git.codelinaro.org/clo/qsdk/oss/lklm/nss-clients|g' feeds/ipq807x/qca-nss-clients/Makefile
         ./setup.py --setup
 
     - name: Load custom feeds
