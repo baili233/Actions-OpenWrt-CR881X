@@ -135,6 +135,7 @@ jobs:
           CONFIG_PACKAGE_luci=y
         EOF
         $GITHUB_WORKSPACE/$DIY_P2_SH
+        sed -i 's|" root=/dev/ubiblock0_1 |" |' target/linux/ipq50xx/dts/ipq5018-cr881x.dts
 
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
